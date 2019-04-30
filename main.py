@@ -35,6 +35,7 @@ def create_repo(host,bucket,role,repo_name):
   return r
 
 def create_snapshot(host,repo_name,snapshot_name):
+  print("creating snapshot with name : " + snapshot_name)
   url = host + "_snapshot/" + repo_name + "/" + snapshot_name
   payload = '{}'
   r = requests.put(url, auth=ec2_auth(), data=payload, headers={"Content-Type": "application/json"})
@@ -86,15 +87,21 @@ def search(host,target):
   r = requests.get(url, auth=ec2_auth(), headers={"Content-Type": "application/json"})
   return r
 
+def adv_search(host,target):
+  url = host + target
+  r = requests.get(url, auth=ec2_auth(), headers={"Content-Type": "application/json"})
+  return r
+
 ###
 # job wrapper
 ###
 
 def get_snapshot_status_from_list_snapshots(json,snapshot_name):
-  for x in json["snapshots"]:
-    if x["snapshot"]==snapshot_name:
-      return x
-    pass
+  for i in range(5):
+    print "try "+ str(i) + " " + snapshot_name
+    for x in json["snapshots"]:
+      if x["snapshot"]==snapshot_name:
+        return x
   return
 
 def snapshot_checker_worker(identifier,host,snapshot_name):
@@ -105,14 +112,16 @@ def snapshot_checker_worker(identifier,host,snapshot_name):
   print "Snapshoting on "+host+" finished with status "+get_snapshot_status_from_list_snapshots(get_repo_detail(host,default_repo_name).json(),snapshot_name)["state"]
   pass
 
-def initiate_snapshot(tuples,s3,role):
+def initiate_snapshot_async(tuples,s3,role):
   for identifier, host in tuples.items():
     create_repo(host,s3,role,default_repo_name)
+    time.sleep(5)
     localtime = time.localtime()
     time_string = time.strftime("%Y-%m-%d-%H-%M-%S", localtime)
     snapshot_name = identifier+"-"+time_string
     try:
       create_snapshot(host,default_repo_name,snapshot_name)
+      time.sleep(5)
       thread.start_new_thread( snapshot_checker_worker, (identifier, host, snapshot_name) )
     except:
       print "Error: unable to start snapshot or thread on "+ identifier
@@ -120,6 +129,22 @@ def initiate_snapshot(tuples,s3,role):
     pass
   return
 
+def initiate_snapshot(tuples,s3,role):
+  for identifier, host in tuples.items():
+    create_repo(host,s3,role,default_repo_name)
+    time.sleep(2)
+    localtime = time.localtime()
+    time_string = time.strftime("%Y-%m-%d-%H-%M-%S", localtime)
+    snapshot_name = identifier+"-"+time_string
+    try:
+      create_snapshot(host,default_repo_name,snapshot_name)
+      time.sleep(2)
+      snapshot_checker_worker(identifier, host, snapshot_name)
+    except:
+      print "Error: unable to start snapshot or thread on "+ identifier
+      pass
+    pass
+  return
 
 def get_latest_snapshot(json,identifier):
   ret = None
@@ -137,6 +162,7 @@ def get_latest_snapshot(json,identifier):
 def initiate_restore(tuples,s3,role):
   for identifier, host in tuples.items():
     create_repo(host,s3,role,default_repo_name)
+    time.sleep(2)
     json = get_repo_detail(host,default_repo_name).json()
     snapshot_name = get_latest_snapshot(json,identifier)["snapshot"]
     if snapshot_name == None:
@@ -146,4 +172,3 @@ def initiate_restore(tuples,s3,role):
     print get_indices(host).text
     pass
   return
-
