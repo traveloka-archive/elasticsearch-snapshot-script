@@ -92,6 +92,16 @@ def adv_search(host,target):
   r = requests.get(url, auth=ec2_auth(), headers={"Content-Type": "application/json"})
   return r
 
+def post(host,json):
+  url = host
+  r = requests.post(url, auth=ec2_auth(), data=json, headers={"Content-Type": "application/json"})
+  return r
+
+def get(host):
+  url = host
+  r = requests.get(url, auth=ec2_auth(), headers={"Content-Type": "application/json"})
+  return r
+
 ###
 # job wrapper
 ###
