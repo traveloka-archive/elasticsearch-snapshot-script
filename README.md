@@ -1,7 +1,24 @@
 # elasticsearch-snapshot-script
 Repo to store python script to call elasticsearch snapshot service from aws bastion
 
-# How to use
-1. enter python
-2. execfile("main.py")
-3. run the es command inside the python ex: search("es-domain-url/","index-type")
+
+
+# Sample call
+GET
+```./get "https://vpc-srsdata-exp-cff4a49ef13eb7d4-dqr6sihwsue7zphopb5ul4drwi.ap-southeast-1.es.amazonaws.com/geo_area_test_2018_10_09_19_00/_search"```
+
+Post
+```./post 'https://vpc-srsdata-exp-cff4a49ef13eb7d4-dqr6sihwsue7zphopb5ul4drwi.ap-southeast-1.es.amazonaws.com/geo_area_test_2018_10_09_19_00/_search' '{
+    "query" : {
+        "bool" : {
+            "must" : [
+                {
+                    "term" : {
+                        "pC" : "geo_area"
+                    }
+                }
+            ]
+        
+        }
+    }
+}'```
