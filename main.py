@@ -34,12 +34,6 @@ def create_repo(host,bucket,role,repo_name):
   r = requests.put(url, auth=ec2_auth(), data=payload, headers={"Content-Type": "application/json"})
   return r
 
-
-def post(host,json):
-  url = host
-  r = requests.post(url, auth=ec2_auth(), data=json, headers={"Content-Type": "application/json"})
-  return r
-
 def create_snapshot(host,repo_name,snapshot_name):
   print("creating snapshot with name : " + snapshot_name)
   url = host + "_snapshot/" + repo_name + "/" + snapshot_name
