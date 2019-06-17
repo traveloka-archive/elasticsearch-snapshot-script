@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+printf "\n\n\n"
+python -c "import main; print main.get_repo_detail(\"\"\"$1\"\"\",'default_repo_name').text.encode('utf-8').strip()" 
+printf "\n\n\n"
