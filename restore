@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+printf "\n\n\n"
+python -c "import main; print main.initiate_restore(\"\"\"$1\"\"\",'$2,'$3').text.encode('utf-8').strip()" 
+printf "\n\n\n"

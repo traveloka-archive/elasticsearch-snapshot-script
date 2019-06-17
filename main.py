@@ -102,6 +102,11 @@ def get(host):
   r = requests.get(url, auth=ec2_auth(), headers={"Content-Type": "application/json"})
   return r
 
+def put(host,json):
+  url = host
+  r = requests.put(url, auth=ec2_auth(), data=json, headers={"Content-Type": "application/json"})
+  return r
+
 ###
 # job wrapper
 ###
