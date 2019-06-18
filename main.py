@@ -107,6 +107,11 @@ def put(host,json):
   r = requests.put(url, auth=ec2_auth(), data=json, headers={"Content-Type": "application/json"})
   return r
 
+def delete(host,json):
+  url = host
+  r = requests.delete(url, auth=ec2_auth(), data=json, headers={"Content-Type": "application/json"})
+  return r
+
 ###
 # job wrapper
 ###
