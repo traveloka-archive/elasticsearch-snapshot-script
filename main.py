@@ -140,7 +140,7 @@ def initiate_snapshot_async(tuples,s3,role):
     time_string = time.strftime("%Y-%m-%d-%H-%M-%S", localtime)
     snapshot_name = identifier+"-"+time_string
     try:
-      create_snapshot(host,default_repo_name,snapshot_name)
+      print "Create snapshot response : " + create_snapshot(host,default_repo_name,snapshot_name).text
       time.sleep(5)
       thread.start_new_thread( snapshot_checker_worker, (identifier, host, snapshot_name) )
     except:
@@ -151,13 +151,14 @@ def initiate_snapshot_async(tuples,s3,role):
 
 def initiate_snapshot(tuples,s3,role):
   for identifier, host in tuples.items():
-    create_repo(host,s3,role,default_repo_name)
+    print "Create repo response : " + create_repo(host,s3,role,default_repo_name).text
     time.sleep(2)
     localtime = time.localtime()
     time_string = time.strftime("%Y-%m-%d-%H-%M-%S", localtime)
     snapshot_name = identifier+"-"+time_string
+    print "Create snapshot with name " + snapshot_name
     try:
-      create_snapshot(host,default_repo_name,snapshot_name)
+      print "Create snapshot response : " + create_snapshot(host,default_repo_name,snapshot_name).text
       time.sleep(2)
       snapshot_checker_worker(identifier, host, snapshot_name)
     except:
@@ -181,14 +182,15 @@ def get_latest_snapshot(json,identifier):
 
 def initiate_restore(tuples,s3,role):
   for identifier, host in tuples.items():
-    create_repo(host,s3,role,default_repo_name)
+    print "Create repo response : " + create_repo(host,s3,role,default_repo_name).text
     time.sleep(2)
+    print "Get repo response : " + get_repo_detail(host,default_repo_name).text
     json = get_repo_detail(host,default_repo_name).json()
     snapshot_name = get_latest_snapshot(json,identifier)["snapshot"]
     if snapshot_name == None:
       continue
     print "Restoring "+snapshot_name+" for " + identifier
-    restore(host,default_repo_name,snapshot_name)
+    print "Restoring response " + restore(host,default_repo_name,snapshot_name).text
     print get_indices(host).text
     pass
   return
