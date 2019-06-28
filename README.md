@@ -54,3 +54,25 @@ Trigger Restore
  "geo" : "https://new-es-endpoint-2/"   
 }' 'srstest-migrationbucket-newaccountid-12345678' 'arn:aws:iam::newaccountid:role/ElasticsearchRole_srs_elasticsearchmigration'
 ```
+
+# Passing single quotes on the argument
+you need to add $ char before the argument
+sample : 
+```
+./post 'https://es-domain.com/link' $'{
+  "script": {
+    "source": "ctx._source.type=\'LandmarkType\'",
+    "lang": "painless"
+  }
+}'
+```
+
+# Error permission
+if error happen something like this
+```
+bash: ./xxxx: Permission denied
+```
+allow execution by run this command
+```
+chmod +x xxxx
+```
