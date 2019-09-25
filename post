@@ -2,7 +2,7 @@
 set -e
 set -u
 set -o pipefail
-
+SCRIPT_DIR="$(dirname "$BASH_SOURCE")"
 printf "\n\n\n"
-python -c "import main; print main.post('$1',\"\"\"$2\"\"\").text.encode('utf-8').strip()" 
+python -c "import sys; sys.path.insert(1, '$SCRIPT_DIR'); import main; print main.post('$1',\"\"\"$2\"\"\").text.encode('utf-8').strip()"
 printf "\n\n\n"
